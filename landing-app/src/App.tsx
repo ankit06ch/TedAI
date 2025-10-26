@@ -217,7 +217,7 @@ export default function App(): React.JSX.Element {
       </section>
       <div className={`stage-fade${isTransitioning ? ' show' : ''}`} aria-hidden="true" />
       <section className="dashboard-layer">
-        <Dashboard email={currentUser?.email ?? null} onSignOut={handleSignOut} />
+        <Dashboard email={currentUser?.email ?? null} uid={currentUser?.uid ?? null} onSignOut={handleSignOut} />
       </section>
     </div>
   )

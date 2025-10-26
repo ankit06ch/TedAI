@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Download, User } from 'lucide-react'
 import ConversationMap from './ConversationMap'
 import { ConversationMeta, listConversations } from './firebase/conversations'
+import { TranscriptMeta, getUserTranscripts } from './firebase/transcripts'
 import RecordedTranscript from './components/RecordedTranscript'
 import Insights from './components/Insights'
 import SentimentAnalysis from './components/SentimentAnalysis'
 import BrainImage from './components/BrainImage'
+import { type BrainWaveType } from './services/gemini'
 
 type Props = {
   email?: string | null
@@ -16,27 +18,76 @@ type Props = {
 type View = 'dashboard' | 'conversation'
 
 export default function Dashboard({ email, uid, onSignOut }: Props): React.JSX.Element {
+  
   const [activeView, setActiveView] = useState<View>('dashboard')
   const [conversations, setConversations] = useState<ConversationMeta[]>([])
+  const [transcripts, setTranscripts] = useState<TranscriptMeta[]>([])
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [speechTrigger, setSpeechTrigger] = useState(0)
+  const [activeBrainWave, setActiveBrainWave] = useState<BrainWaveType | undefined>(undefined)
+  const [isClassifying, setIsClassifying] = useState(false)
+  const [canClassify, setCanClassify] = useState(false)
+  const [classificationConfidence, setClassificationConfidence] = useState(0)
+  const [transcriptSegments, setTranscriptSegments] = useState<any[]>([])
   const userMenuRef = useRef<HTMLDivElement | null>(null)
+
+  const refreshTranscripts = async () => {
+    if (!uid) return
+    try {
+      const transcriptsList = await getUserTranscripts(uid)
+      setTranscripts(transcriptsList)
+    } catch (error) {
+      console.error('Failed to refresh transcripts:', error)
+    }
+  }
+
+  const handleBrainWaveClassification = (brainWave: BrainWaveType, confidence: number) => {
+    setActiveBrainWave(brainWave)
+    setClassificationConfidence(confidence)
+    setIsClassifying(false)
+  }
+
+  const handleClassificationStart = () => {
+    setIsClassifying(true)
+  }
+
+  const handleClassify = () => {
+    // Call the classify function exposed by RecordedTranscript
+    if ((window as any).classifyCurrentConversation) {
+      (window as any).classifyCurrentConversation()
+    }
+  }
 
   useEffect(() => {
     let isMounted = true
-    if (!uid) { setConversations([]); return }
+    if (!uid) { 
+      setConversations([])
+      setTranscripts([])
+      return 
+    }
+    
     ;(async () => {
       try {
-        const list = await listConversations(uid)
-        if (isMounted) setConversations(list)
-      } catch {
-        if (isMounted) setConversations([])
+        const [conversationsList, transcriptsList] = await Promise.all([
+          listConversations(uid),
+          getUserTranscripts(uid)
+        ])
+        if (isMounted) {
+          setConversations(conversationsList)
+          setTranscripts(transcriptsList)
+        }
+      } catch (error) {
+        console.error('Failed to load user data:', error)
+        if (isMounted) {
+          setConversations([])
+          setTranscripts([])
+        }
       }
     })()
     return () => { isMounted = false }
-  }, [uid, activeView])
+  }, [uid])
   useEffect(() => {
     function handleGlobalClick(e: MouseEvent) {
       if (!isUserMenuOpen) return
@@ -90,12 +141,28 @@ export default function Dashboard({ email, uid, onSignOut }: Props): React.JSX.E
               </header>
               <section className="four-grid">
                 <RecordedTranscript 
+                  userId={uid}
+                  transcripts={transcripts}
                   onRecordingChange={setIsRecording} 
                   onSpeechDetected={() => setSpeechTrigger(prev => prev + 1)}
+                  onTranscriptsChange={refreshTranscripts}
+                  onBrainWaveClassified={handleBrainWaveClassification}
+                  onClassificationStart={handleClassificationStart}
+                  onCanClassifyChange={setCanClassify}
+                  onClassifyRequest={handleClassify}
+                  onSegmentsChange={setTranscriptSegments}
                 />
-                <BrainImage speechTrigger={speechTrigger} />
-                <Insights />
-                <SentimentAnalysis />
+                <BrainImage 
+                  speechTrigger={speechTrigger} 
+                  activeBand={activeBrainWave}
+                  onBandChange={setActiveBrainWave}
+                  isClassifying={isClassifying}
+                  onClassify={handleClassify}
+                  canClassify={canClassify}
+                  classificationConfidence={classificationConfidence}
+                />
+                <Insights activeBrainWave={activeBrainWave} />
+                <SentimentAnalysis segments={transcriptSegments} />
               </section>
             </>
           ) : (

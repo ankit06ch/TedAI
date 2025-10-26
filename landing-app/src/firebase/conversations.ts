@@ -101,7 +101,7 @@ export type ConversationMeta = {
 }
 
 export async function listConversations(userId: string, max: number = 20): Promise<ConversationMeta[]> {
-  const q = query(conversationsCol(), where('userId', '==', userId), orderBy('updatedAt', 'desc'), limit(max))
+  const q = query(conversationsCol(), where('userId', '==', userId), limit(max))
   const snap = await getDocs(q)
   return snap.docs.map((d) => {
     const data = d.data() as any
