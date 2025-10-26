@@ -15,13 +15,13 @@ export default function App(): React.JSX.Element {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showDashboard, setShowDashboard] = useState(false)
   // Typewriter state
-  const phrases = useMemo(() => {
+  const words = useMemo(() => {
     const list = [
-      'AI meets medicine',
-      'AI meets psychology',
-      'AI meets science',
-      'AI meets education',
-      'AI meets innovation',
+      'medicine.',
+      'psychology.',
+      'science.',
+      'education.',
+      'innovation.',
     ]
     // Shuffle once per mount
     for (let i = list.length - 1; i > 0; i--) {
@@ -33,14 +33,38 @@ export default function App(): React.JSX.Element {
   const [phraseIndex, setPhraseIndex] = useState(0)
   const [charIndex, setCharIndex] = useState(0)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
   const handleHoverStart = useCallback(() => {
     const video = backgroundVideoRef.current
     if (video) video.playbackRate = 2
+    setIsHovering(true)
+    // Add hovered class to Ted GIF container
+    const tedContainer = document.querySelector('.ted-gif-container') as HTMLElement
+    if (tedContainer) {
+      tedContainer.classList.add('hovered')
+    }
   }, [])
   const handleHoverEnd = useCallback(() => {
     const video = backgroundVideoRef.current
     if (video) video.playbackRate = 1
+    setIsHovering(false)
+    // Remove hovered class from Ted GIF container
+    const tedContainer = document.querySelector('.ted-gif-container') as HTMLElement
+    if (tedContainer) {
+      tedContainer.classList.remove('hovered')
+    }
   }, [])
+  
+  // Add mouse enter/leave handlers to prevent hover loss
+  const handleMouseEnter = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    handleHoverStart()
+  }, [handleHoverStart])
+  
+  const handleMouseLeave = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    handleHoverEnd()
+  }, [handleHoverEnd])
   const openModal = useCallback(() => setIsModalOpen(true), [])
   const closeModal = useCallback(() => setIsModalOpen(false), [])
   const toggleAuthMode = useCallback(() => setIsSignInMode((v) => !v), [])
@@ -63,12 +87,12 @@ export default function App(): React.JSX.Element {
 
   // Typewriter effect
   useEffect(() => {
-    if (phrases.length === 0) return
-    const current = phrases[phraseIndex % phrases.length] ?? ''
+    if (words.length === 0) return
+    const current = words[phraseIndex % words.length] ?? ''
     const isComplete = charIndex === current.length
     const isEmpty = charIndex === 0
-    const baseDelay = isDeleting ? 28 : 60
-    const nextDelay = (!isDeleting && isComplete) ? 1100 : (isDeleting && isEmpty) ? 300 : baseDelay
+    const baseDelay = isDeleting ? 50 : 120
+    const nextDelay = (!isDeleting && isComplete) ? 2000 : (isDeleting && isEmpty) ? 500 : baseDelay
     const t = window.setTimeout(() => {
       if (!isDeleting && charIndex < current.length) {
         setCharIndex((v) => v + 1)
@@ -78,11 +102,11 @@ export default function App(): React.JSX.Element {
         setCharIndex((v) => v - 1)
       } else {
         setIsDeleting(false)
-        setPhraseIndex((i) => (i + 1) % phrases.length)
+        setPhraseIndex((i) => (i + 1) % words.length)
       }
     }, nextDelay)
     return () => window.clearTimeout(t)
-  }, [phrases, phraseIndex, charIndex, isDeleting])
+  }, [words, phraseIndex, charIndex, isDeleting])
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setSubmitError(null)
@@ -125,7 +149,7 @@ export default function App(): React.JSX.Element {
     }
   }, [currentUser, isTransitioning])
   return (
-    <div className={`app-stage ${currentUser ? 'authed' : 'guest'}`}>
+    <div className={`app-stage ${currentUser ? 'authed' : 'guest'}${isHovering ? ' cta-hover' : ''}`}>
       <section className="landing-layer">
         <div className="page-root">
           <video
@@ -138,26 +162,38 @@ export default function App(): React.JSX.Element {
             preload="metadata"
             ref={backgroundVideoRef}
           />
-          <div className="overlay">
+          <div className={`overlay${isModalOpen ? ' modal-open' : ''}`}>
             <img src="/3.png" alt="Ted.AI logo" className="logo" />
             {(() => {
-              const current = phrases[phraseIndex % phrases.length] ?? ''
+              const current = words[phraseIndex % words.length] ?? ''
               const display = current.slice(0, charIndex)
               return (
                 <div className="typewriter" aria-live="polite" aria-atomic="true">
-                  <span className="tw-text">{display}</span>
+                  <span className="tw-text">AI meets {display}</span>
                   <span className="tw-caret" aria-hidden="true"></span>
                 </div>
               )
             })()}
             <button
               className="cta"
-              onMouseEnter={handleHoverStart}
-              onMouseLeave={handleHoverEnd}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
               onClick={openModal}
             >
               Launch
             </button>
+          </div>
+          {/* Ted gif in bottom left */}
+          <div className="ted-gif-container">
+            <img
+              className="ted-gif"
+              src="/ted.gif"
+              alt="Ted animation"
+            />
+          </div>
+          {/* Made with love text */}
+          <div className="made-with-love">
+            Made with ❤️ with students at Georgia Tech
           </div>
           {/* Modal */}
           <div
