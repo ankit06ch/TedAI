@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, type User } from 'firebase/auth'
 import { auth } from './firebase/config'
 import Dashboard from './Dashboard'
@@ -14,6 +14,25 @@ export default function App(): React.JSX.Element {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showDashboard, setShowDashboard] = useState(false)
+  // Typewriter state
+  const phrases = useMemo(() => {
+    const list = [
+      'AI meets medicine',
+      'AI meets psychology',
+      'AI meets science',
+      'AI meets education',
+      'AI meets innovation',
+    ]
+    // Shuffle once per mount
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[list[i], list[j]] = [list[j], list[i]]
+    }
+    return list
+  }, [])
+  const [phraseIndex, setPhraseIndex] = useState(0)
+  const [charIndex, setCharIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
   const handleHoverStart = useCallback(() => {
     const video = backgroundVideoRef.current
     if (video) video.playbackRate = 2
@@ -41,6 +60,29 @@ export default function App(): React.JSX.Element {
       video.play().catch(() => {})
     }
   }, [showDashboard, isTransitioning])
+
+  // Typewriter effect
+  useEffect(() => {
+    if (phrases.length === 0) return
+    const current = phrases[phraseIndex % phrases.length] ?? ''
+    const isComplete = charIndex === current.length
+    const isEmpty = charIndex === 0
+    const baseDelay = isDeleting ? 28 : 60
+    const nextDelay = (!isDeleting && isComplete) ? 1100 : (isDeleting && isEmpty) ? 300 : baseDelay
+    const t = window.setTimeout(() => {
+      if (!isDeleting && charIndex < current.length) {
+        setCharIndex((v) => v + 1)
+      } else if (!isDeleting && isComplete) {
+        setIsDeleting(true)
+      } else if (isDeleting && charIndex > 0) {
+        setCharIndex((v) => v - 1)
+      } else {
+        setIsDeleting(false)
+        setPhraseIndex((i) => (i + 1) % phrases.length)
+      }
+    }, nextDelay)
+    return () => window.clearTimeout(t)
+  }, [phrases, phraseIndex, charIndex, isDeleting])
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setSubmitError(null)
@@ -97,7 +139,17 @@ export default function App(): React.JSX.Element {
             ref={backgroundVideoRef}
           />
           <div className="overlay">
-            <img src="/1.png" alt="Ted.AI logo" className="logo" />
+            <img src="/3.png" alt="Ted.AI logo" className="logo" />
+            {(() => {
+              const current = phrases[phraseIndex % phrases.length] ?? ''
+              const display = current.slice(0, charIndex)
+              return (
+                <div className="typewriter" aria-live="polite" aria-atomic="true">
+                  <span className="tw-text">{display}</span>
+                  <span className="tw-caret" aria-hidden="true"></span>
+                </div>
+              )
+            })()}
             <button
               className="cta"
               onMouseEnter={handleHoverStart}
