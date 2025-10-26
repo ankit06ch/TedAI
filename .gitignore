@@ -1,0 +1,1 @@
+# Logs\nlogs\n*.log\n\n# Dependencies\nnode_modules/\n.pnpm-store/\n\n# Builds\ndist/\nbuild/\n.vite/\n\n# Editor\n.DS_Store\n.vscode/\n.idea/\n\n# Env\n.env\n.env.local\n.env.*.local\n\n# Misc\npnpm-lock.yaml\n
