@@ -51,14 +51,31 @@ export default function BrainImage({
     }
   }, [activeBand])
 
-  // Map 0..5 to blue->red gradient (blue at 0, red at 5)
+  // Map 0..5 to blue->green->yellow->red gradient (blue at 0, red at 5)
   const colorForValue = useCallback((value: number) => {
     const t = Math.max(0, Math.min(1, value / 5))
-    const [br, bg, bb] = BLUE
-    const [rr, rg, rb] = RED
-    const r = Math.round(br + (rr - br) * t)
-    const g = Math.round(bg + (rg - bg) * t)
-    const b = Math.round(bb + (rb - bb) * t)
+    // Define key colors
+    const blue: [number, number, number] = BLUE
+    const green: [number, number, number] = [143, 234, 97]
+    const yellow: [number, number, number] = [255, 215, 0]
+    const red: [number, number, number] = RED
+    // Piecewise interpolate across 3 segments: [0,1/3] blue->green, (1/3,2/3] green->yellow, (2/3,1] yellow->red
+    let c0: [number, number, number]
+    let c1: [number, number, number]
+    let localT: number
+    if (t <= 1/3) {
+      c0 = blue; c1 = green; localT = t / (1/3)
+    } else if (t <= 2/3) {
+      c0 = green; c1 = yellow; localT = (t - 1/3) / (1/3)
+    } else {
+      c0 = yellow; c1 = red;
+      // ease-in toward red to bias more red near the end
+      const raw = (t - 2/3) / (1/3)
+      localT = Math.pow(Math.max(0, Math.min(1, raw)), 0.75)
+    }
+    const r = Math.round(c0[0] + (c1[0] - c0[0]) * localT)
+    const g = Math.round(c0[1] + (c1[1] - c0[1]) * localT)
+    const b = Math.round(c0[2] + (c1[2] - c0[2]) * localT)
     return `rgb(${r}, ${g}, ${b})`
   }, [])
 
@@ -80,6 +97,11 @@ export default function BrainImage({
           <span className="bm tr" style={{ color: colorForValue(metrics.tr) }}>{metrics.tr.toFixed(1)}</span>
           <span className="bm bl" style={{ color: colorForValue(metrics.bl) }}>{metrics.bl.toFixed(1)}</span>
           <span className="bm br" style={{ color: colorForValue(metrics.br) }}>{metrics.br.toFixed(1)}</span>
+        </div>
+        <div className="bam-legend" aria-hidden="true">
+          <span className="l-min">0.0</span>
+          <i className="l-bar" />
+          <span className="l-max">5.0</span>
         </div>
         <div className="band-controls" role="group" aria-label="Brainwave bands">
           {bands.map((b) => (
