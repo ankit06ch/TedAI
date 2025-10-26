@@ -59,6 +59,8 @@ export default function Dashboard({ email, uid, onSignOut }: Props): React.JSX.E
                 <div className="welcome-area">
                   <h2 className="welcome-title">Welcome, {email?.split('@')[0] || 'User'}.</h2>
                   <span className="role-badge">Neurologist</span>
+                  <span className="patient-badge">Patient 1</span>
+                  <span className="connection-badge">Connected to Ted.AI</span>
                 </div>
                 <div className="actions">
                   <button className="icon-btn" aria-label="Download"><Download size={18} /></button>
