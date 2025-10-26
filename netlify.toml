@@ -1,0 +1,7 @@
+[build]
+  base = "landing-app"
+  command = "pnpm run build"
+  publish = "landing-app/dist"
+
+[build.environment]
+  NODE_VERSION = "18"
