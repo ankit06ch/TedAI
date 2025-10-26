@@ -20,6 +20,8 @@ export default function Dashboard({ email, uid, onSignOut }: Props): React.JSX.E
   const [conversations, setConversations] = useState<ConversationMeta[]>([])
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
+  const [speechTrigger, setSpeechTrigger] = useState(0)
   const userMenuRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export default function Dashboard({ email, uid, onSignOut }: Props): React.JSX.E
               <header className="topbar">
                 <div className="welcome-area">
                   <h2 className="welcome-title">Welcome, {email?.split('@')[0] || 'User'}.</h2>
-                  <span className="role-badge">Pediatric Psychologist</span>
+                  <span className="role-badge">Neurologist</span>
                 </div>
                 <div className="actions">
                   <button className="icon-btn" aria-label="Download"><Download size={18} /></button>
@@ -85,8 +87,11 @@ export default function Dashboard({ email, uid, onSignOut }: Props): React.JSX.E
                 </div>
               </header>
               <section className="four-grid">
-                <RecordedTranscript />
-                <BrainImage />
+                <RecordedTranscript 
+                  onRecordingChange={setIsRecording} 
+                  onSpeechDetected={() => setSpeechTrigger(prev => prev + 1)}
+                />
+                <BrainImage speechTrigger={speechTrigger} />
                 <Insights />
                 <SentimentAnalysis />
               </section>

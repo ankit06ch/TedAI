@@ -1,15 +1,17 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState, useEffect } from 'react'
 
 type Props = {
   src?: string
   alt?: string
+  speechTrigger?: number
 }
 
 export default function BrainImage({ 
   src = "/2.png", 
-  alt = "Center visual" 
+  alt = "Center visual",
+  speechTrigger = 0
 }: Props): React.JSX.Element {
-  type Band = 'delta' | 'theta' | 'alpha' | 'beta' | 'gamma'
+  type Band = 'alpha' | 'beta' | 'gamma'
 
   const [activeBand, setActiveBand] = useState<Band>('alpha')
 
@@ -38,7 +40,7 @@ export default function BrainImage({
     // Recompute whenever the band changes to randomize
   }, [activeBand, makeGradient])
 
-  const bands: Band[] = ['delta', 'theta', 'alpha', 'beta', 'gamma']
+  const bands: Band[] = ['alpha', 'beta', 'gamma']
 
   const metrics = useMemo(() => {
     // Generate four random decimals between 0.0 and 5.0
@@ -49,7 +51,14 @@ export default function BrainImage({
       bl: r(),
       br: r(),
     }
-  }, [activeBand])
+  }, [activeBand, speechTrigger])
+
+  const brainRegions = {
+    tl: { name: 'Prefrontal Cortex', description: 'Executive function, decision making' },
+    tr: { name: 'Motor Cortex', description: 'Movement control, coordination' },
+    bl: { name: 'Temporal Lobe', description: 'Memory, language processing' },
+    br: { name: 'Occipital Lobe', description: 'Visual processing, perception' }
+  }
 
   // Map 0..5 to blue->green->yellow->red gradient (blue at 0, red at 5)
   const colorForValue = useCallback((value: number) => {
@@ -93,10 +102,26 @@ export default function BrainImage({
           <span className="heat-blob b6" style={{ background: blobGradients[5] }}></span>
         </div>
         <div className="band-metrics" aria-hidden="true">
-          <span className="bm tl" style={{ color: colorForValue(metrics.tl) }}>{metrics.tl.toFixed(1)}</span>
-          <span className="bm tr" style={{ color: colorForValue(metrics.tr) }}>{metrics.tr.toFixed(1)}</span>
-          <span className="bm bl" style={{ color: colorForValue(metrics.bl) }}>{metrics.bl.toFixed(1)}</span>
-          <span className="bm br" style={{ color: colorForValue(metrics.br) }}>{metrics.br.toFixed(1)}</span>
+          <div className="bm-container tl">
+            <span className="bm-value" style={{ color: colorForValue(metrics.tl) }}>{metrics.tl.toFixed(1)}</span>
+            <div className="bm-label">{brainRegions.tl.name}</div>
+            <div className="bm-description">{brainRegions.tl.description}</div>
+          </div>
+          <div className="bm-container tr">
+            <span className="bm-value" style={{ color: colorForValue(metrics.tr) }}>{metrics.tr.toFixed(1)}</span>
+            <div className="bm-label">{brainRegions.tr.name}</div>
+            <div className="bm-description">{brainRegions.tr.description}</div>
+          </div>
+          <div className="bm-container bl">
+            <span className="bm-value" style={{ color: colorForValue(metrics.bl) }}>{metrics.bl.toFixed(1)}</span>
+            <div className="bm-label">{brainRegions.bl.name}</div>
+            <div className="bm-description">{brainRegions.bl.description}</div>
+          </div>
+          <div className="bm-container br">
+            <span className="bm-value" style={{ color: colorForValue(metrics.br) }}>{metrics.br.toFixed(1)}</span>
+            <div className="bm-label">{brainRegions.br.name}</div>
+            <div className="bm-description">{brainRegions.br.description}</div>
+          </div>
         </div>
         <div className="bam-legend" aria-hidden="true">
           <span className="l-min">0.0</span>

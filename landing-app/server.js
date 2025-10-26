@@ -82,7 +82,7 @@ app.post('/api/generate-adhd-insights', async (req, res) => {
     
     // Generate varied contexts with specific details for different insights
     const ages = [6, 7, 8, 9, 10, 11, 12]
-    const settings = ['pediatric session', 'therapy session', 'assessment session', 'counseling session', 'behavioral observation', 'therapeutic session', 'evaluation session', 'intervention session']
+    const settings = ['therapy session', 'assessment session', 'counseling session', 'behavioral observation', 'therapeutic session', 'evaluation session', 'intervention session']
     const behaviors = [
       'restlessness and constant movement', 'difficulty following multi-step instructions', 'frequent topic changes and tangential speech',
       'hyperactive behavior and interrupting others', 'struggling to maintain attention on structured activities', 'fidgeting and difficulty waiting turns',
@@ -109,7 +109,7 @@ app.post('/api/generate-adhd-insights', async (req, res) => {
           role: 'user',
           parts: [
             { 
-              text: `You are a pediatric psychologist analyzing a session with an ADHD child. Generate COMPLETELY UNIQUE and HIGHLY SPECIFIC insights based on the exact context provided. Each insight must be different from typical ADHD observations and tailored specifically to this child's unique presentation.
+              text: `You are a neurologist analyzing a session with an ADHD child. Generate COMPLETELY UNIQUE and HIGHLY SPECIFIC insights based on the exact context provided. Each insight must be different from typical ADHD observations and tailored specifically to this child's unique presentation.
 
 Context: ${adhdContext}
 

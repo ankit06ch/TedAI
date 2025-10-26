@@ -30,7 +30,7 @@ export default function Insights({ segments = [] }: Props): React.JSX.Element {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          context: 'Pediatric session with 8-year-old child showing signs of ADHD including difficulty focusing, hyperactivity, and impulsivity during conversation. Child exhibits restlessness, interrupts frequently, and has difficulty maintaining attention on tasks.'
+          context: 'Session with 8-year-old child showing signs of ADHD including difficulty focusing, hyperactivity, and impulsivity during conversation. Child exhibits restlessness, interrupts frequently, and has difficulty maintaining attention on tasks.'
         })
       })
       
