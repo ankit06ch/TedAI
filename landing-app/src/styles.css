@@ -447,27 +447,72 @@
   display: inline-block;
   isolation: isolate;
 }
+.bam-title {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  color: #e5e7eb;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(17,24,39,0.6);
+  border: 1px solid #1f2937;
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+.brain-wrap img { position: relative; z-index: 1; }
 
 /* Animated heatmap overlay (abstract RGB blobs) */
 .heatmap {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  mix-blend-mode: overlay;
-  filter: blur(18px) saturate(1.4) brightness(0.9);
+  mix-blend-mode: screen;
+  filter: blur(22px) saturate(2.2) brightness(1.35);
+  z-index: 2;
 }
+
+/* Corner metrics for bands */
+.band-metrics {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.bm {
+  position: absolute;
+  display: inline-block;
+  min-width: 34px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 14px;
+  color: #e5e7eb;
+  background: rgba(17,24,39,0.65);
+  border: 1px solid #1f2937;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+}
+.bm.tl { top: 36px; left: 36px; }
+.bm.tr { top: 36px; right: 36px; }
+.bm.bl { bottom: 36px; left: 36px; }
+.bm.br { bottom: 36px; right: 36px; }
 .heat-blob {
   position: absolute;
   display: block;
   width: 30%;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  opacity: 0.5;
+  opacity: 1;
   animation: floatCycle 8s ease-in-out infinite, pulse 3.6s ease-in-out infinite;
 }
-.heat-blob.red { background: radial-gradient(circle at 40% 40%, rgba(239,68,68,1), rgba(239,68,68,0) 55%); }
-.heat-blob.green { background: radial-gradient(circle at 60% 60%, rgba(16,185,129,1), rgba(16,185,129,0) 55%); }
-.heat-blob.blue { background: radial-gradient(circle at 50% 50%, rgba(59,130,246,1), rgba(59,130,246,0) 55%); }
+.heat-blob.red { background: radial-gradient(circle at 40% 40%, rgba(200,83,51,1) 0%, rgba(200,83,51,0.92) 38%, rgba(200,83,51,0) 64%); }
+.heat-blob.green { background: radial-gradient(circle at 60% 60%, rgba(143,234,97,1) 0%, rgba(143,234,97,0.9) 38%, rgba(143,234,97,0) 64%); }
+.heat-blob.blue { background: radial-gradient(circle at 50% 50%, rgba(37,26,161,1) 0%, rgba(37,26,161,0.92) 38%, rgba(37,26,161,0) 64%); }
 
 /* Seed initial positions over brain regions (tuned by eye) */
 .heat-blob.b1 { left: 18%; top: 22%; animation-delay: 0s; }
@@ -476,6 +521,37 @@
 .heat-blob.b4 { left: 70%; top: 52%; animation-delay: 1.8s; }
 .heat-blob.b5 { left: 44%; top: 14%; animation-delay: 0.9s; }
 .heat-blob.b6 { left: 8%; top: 62%; animation-delay: 2.1s; }
+
+/* Band controls */
+.band-controls {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 8px;
+  background: rgba(17,24,39,0.55);
+  border: 1px solid #1f2937;
+  border-radius: 999px;
+  padding: 6px;
+  backdrop-filter: blur(8px);
+}
+.band-btn {
+  appearance: none;
+  background: transparent;
+  color: #e5e7eb;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.band-btn:hover { background: rgba(255,255,255,0.06); }
+.band-btn.active { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); }
 
 @keyframes floatCycle {
   0% { transform: translate3d(0, 0, 0) scale(1); }
@@ -486,8 +562,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.65; }
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
 }
 
 /* Top-right: Insights */
