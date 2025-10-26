@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Download, User } from 'lucide-react'
 import ConversationMap from './ConversationMap'
 import { ConversationMeta, listConversations } from './firebase/conversations'
+import RecordedTranscript from './components/RecordedTranscript'
+import Insights from './components/Insights'
+import SentimentAnalysis from './components/SentimentAnalysis'
+import BrainImage from './components/BrainImage'
 
 type Props = {
   email?: string | null
@@ -51,7 +55,7 @@ export default function Dashboard({ email, uid, onSignOut }: Props): React.JSX.E
             <>
               <header className="topbar">
                 <div className="welcome-area">
-                  <h2 className="welcome-title">Welcome, Ankit.</h2>
+                  <h2 className="welcome-title">Welcome, {email?.split('@')[0] || 'User'}.</h2>
                   <span className="role-badge">Pediatric Psychologist</span>
                 </div>
                 <div className="actions">
@@ -81,30 +85,10 @@ export default function Dashboard({ email, uid, onSignOut }: Props): React.JSX.E
                 </div>
               </header>
               <section className="four-grid">
-                <aside className="card rt-panel">
-                  <div className="card-head"><h3>Recorded Transcript</h3></div>
-                  <div className="rt-body">
-                    {/* Content goes here */}
-                  </div>
-                </aside>
-
-                <div className="card center-image">
-                  <img src="/2.png" alt="Center visual" />
-                </div>
-
-                <section className="card insights">
-                  <div className="card-head duo"><h3>Insights</h3><span className="role-badge">Powered by AI</span></div>
-                  <div className="insights-body">
-                    {/* Content goes here */}
-                  </div>
-                </section>
-
-                <section className="card sentiment">
-                  <div className="card-head"><h3>Sentiment Analysis</h3></div>
-                  <div className="sentiment-body">
-                    {/* Content goes here */}
-                  </div>
-                </section>
+                <RecordedTranscript />
+                <BrainImage />
+                <Insights />
+                <SentimentAnalysis />
               </section>
             </>
           ) : (
