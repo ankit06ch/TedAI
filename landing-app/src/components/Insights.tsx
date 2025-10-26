@@ -105,7 +105,7 @@ export default function Insights({ segments = [] }: Props): React.JSX.Element {
         ) : (
           <div className="insights-empty">
             <p>No insights available</p>
-            <small>Click Generate to create ADHD-specific insights</small>
+            <small>Click Generate to create specific insights</small>
           </div>
         )}
         {error && (
