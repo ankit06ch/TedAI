@@ -680,6 +680,96 @@
   font-style: italic;
 }
 
+/* Generate button and insights header */
+.insights-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.generate-btn {
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.generate-btn:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.generate-btn:disabled {
+  background: #6b7280;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ADHD insights layout */
+.adhd-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px;
+}
+
+.insight-section {
+  background: rgba(2,6,23,0.35);
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.insight-section h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #e5e7eb;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.insight-section ul {
+  margin: 0;
+  padding-left: 16px;
+  list-style: none;
+}
+
+.insight-section li {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #d1d5db;
+  margin-bottom: 4px;
+  position: relative;
+}
+
+.insight-section li::before {
+  content: "•";
+  color: #10b981;
+  font-weight: bold;
+  position: absolute;
+  left: -16px;
+}
+
+.insights-error {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.insights-error p {
+  margin: 0;
+  color: #fca5a5;
+  font-size: 13px;
+}
+
 /* Sentiment segments styling */
 .sentiment-segments {
   display: flex;
