@@ -97,7 +97,7 @@ export default function App(): React.JSX.Element {
             ref={backgroundVideoRef}
           />
           <div className="overlay">
-            <h1 className="typewriter" aria-label="Ted.Ai"><span>Ted.Ai</span></h1>
+            <img src="/1.png" alt="Ted.AI logo" className="logo" />
             <button
               className="cta"
               onMouseEnter={handleHoverStart}
